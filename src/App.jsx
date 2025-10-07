@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [question, setQuestion] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("User asked:", question);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div style={{ textAlign: "center", marginTop: "4rem" }}>
+      <h1>Ask a Question</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Type your question..."
+          style={{
+            padding: "0.5rem 1rem",
+            fontSize: "1rem",
+            width: "300px",
+            marginRight: "1rem",
+          }}
+        />
+        <button type="submit" style={{ padding: "0.5rem 1rem", fontSize: "1rem" }}>
+          Ask
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      </form>
+    </div>
+  );
 }
 
-export default App
+export default App;
