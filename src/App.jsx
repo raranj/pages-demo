@@ -1,84 +1,73 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import "./App.css";
 
 function App() {
+  const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState("");
+  const chatEndRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("User asked:", question);
+    if (!question.trim()) return;
+
+    const newMessage = { role: "user", text: question };
+    setMessages((prev) => [...prev, newMessage]);
+
+    // Simulated assistant reply (mock)
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: "This is a mock response." },
+      ]);
+    }, 600);
+
+    setQuestion("");
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "#f9fafb",
-        fontFamily: "'Inter', sans-serif",
-      }}
-    >
-      <h1 style={{ fontSize: "2rem", marginBottom: "1.5rem", color: "#111827" }}>
-        Ask Anything
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "white",
-          borderRadius: "9999px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.08)",
-          padding: "0.5rem 1rem",
-          width: "min(90%, 500px)",
-          transition: "box-shadow 0.2s ease-in-out",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.12)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.08)";
-        }}
-      >
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Type your question..."
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            fontSize: "1rem",
-            padding: "0.5rem",
-            color: "#111827",
-            background: "transparent",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            backgroundColor: "#2563eb",
-            color: "white",
-            border: "none",
-            borderRadius: "9999px",
-            padding: "0.5rem 1.25rem",
-            cursor: "pointer",
-            fontWeight: "500",
-            fontSize: "1rem",
-            transition: "background-color 0.2s ease-in-out",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1d4ed8")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#2563eb")}
-        >
-          Ask
-        </button>
-      </form>
-      <p style={{ marginTop: "1rem", color: "#6b7280", fontSize: "0.875rem" }}>
-        Powered by Cloudflare Pages
-      </p>
+    <div className="chat-container">
+      <div className="chat-header">Cloudflare Pages Chat</div>
+
+      <div className="chat-messages">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`message-row ${
+              msg.role === "user" ? "user-message" : "assistant-message"
+            }`}
+          >
+            <div className="message-bubble">{msg.text}</div>
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+
+      <footer className="chat-footer">
+        <form className="input-form" onSubmit={handleSubmit}>
+          <textarea
+            className="input-box"
+            placeholder="Message..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={1}
+          />
+          <button type="submit" className="send-btn">
+            ➤
+          </button>
+        </form>
+      </footer>
     </div>
   );
 }
